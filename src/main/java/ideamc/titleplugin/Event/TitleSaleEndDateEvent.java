@@ -9,11 +9,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static ideamc.titleplugin.Date.isDateLater;
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
 
 public class TitleSaleEndDateEvent {
 
-    public TitleSaleEndDateEvent(){
+    public TitleSaleEndDateEvent() {
         Calendar targetTime1 = Calendar.getInstance();
         targetTime1.set(Calendar.HOUR_OF_DAY, 12);
         targetTime1.set(Calendar.MINUTE, 0);
@@ -78,26 +78,28 @@ public class TitleSaleEndDateEvent {
         timer3.scheduleAtFixedRate(task3, targetTime3.getTime(), 24 * 60 * 60 * 1000);
     }
 
-    public static void titlesaleendate(){
-            String sql = "SELECT * FROM Title";
-            List<biyao.TitleData> rs = Sql().readeventquery(sql, "title");
-            if(rs != null){
-                for(biyao.TitleData t : rs){
-                    int title_id = t.getTitleId();
-                    String end_date = t.getSaleEndDate();
-                    if(end_date != null){
-                        if(isDateLater(end_date)){
-                            String sql1 = "UPDATE Title";
-                            sql1 += " SET canbuy = false";
-                            sql1 += " WHERE title_id = " + title_id;
-                            if(Sql().eventquery(sql1)){
-                                Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§2称号ID为" + title_id + "的称号已到截止日期,已修改为不能购买!");
-                            }else{
-                                Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§4称号ID为" + title_id + "的称号到截止日期时修改为不能购买失败!");
-                            }
-                        }
-                    }
+    public static void titlesaleendate() {
+        String sql = "SELECT * FROM Title";
+        List<biyao.TitleData> rs = instance.getDatabase().readQuery(sql, null, "title");
+        if (rs == null) {
+            return;
+        }
+        for (biyao.TitleData t : rs) {
+            int title_id = t.getTitleId();
+            String end_date = t.getSaleEndDate();
+            if (end_date == null) {
+                continue;
+            }
+            if (isDateLater(end_date)) {
+                String sql1 = "UPDATE Title";
+                sql1 += " SET canbuy = false";
+                sql1 += " WHERE title_id = " + title_id;
+                if (instance.getDatabase().eventQuery(sql1)) {
+                    Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§2称号ID为" + title_id + "的称号已到截止日期,已修改为不能购买!");
+                } else {
+                    Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§4称号ID为" + title_id + "的称号到截止日期时修改为不能购买失败!");
                 }
             }
         }
+    }
 }

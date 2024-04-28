@@ -7,17 +7,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
+
 
 public class biyao {
     public static List<TitleData> readshopdatabase(Player player) {
         List<TitleData> titles = new ArrayList<>();
 
         String sql = "SELECT * FROM Title";
-        List<TitleData> rs = Sql().readeventquery(sql, "title");
+        List<TitleData> rs = instance.getDatabase().readQuery(sql, null, "title");
 
         String sql1 = "SELECT * FROM PlayerTitle WHERE player_uuid = '" + player.getUniqueId().toString() + "'";
-        List<TitleData> rs1 = Sql().readeventquery(sql1, "playertitle");
+        List<TitleData> rs1 = instance.getDatabase().readQuery(sql1, null, "playertitle");
         Set<Integer> playerhvae = new HashSet<>();
         if(rs1 != null){
             for(TitleData t : rs1){
@@ -106,12 +107,12 @@ public class biyao {
         List<TitleData> titles = new ArrayList<>();
 
         String sql = "SELECT * FROM PlayerTitle WHERE player_uuid = " + "'" + stplayer_uuid + "'";
-        List<TitleData> rs = Sql().readeventquery(sql, "playertitle");
+        List<TitleData> rs = instance.getDatabase().readQuery(sql, null, "playertitle");
         if(rs != null){
             for(TitleData t : rs){
                 int title_id = t.getTitleId();
                 String sql1 = "SELECT * FROM Title WHERE title_id = '" + title_id + "'";
-                List<TitleData> rs1 = Sql().readeventquery(sql1, "title");
+                List<TitleData> rs1 = instance.getDatabase().readQuery(sql1, null, "title");
                 if(rs1 != null){
                     for(TitleData t1 : rs1){
                         int titleId = t1.getTitleId();
@@ -142,7 +143,7 @@ public class biyao {
         List<TitleData> titles = new ArrayList<>();
 
         String sql = "SELECT * FROM Title";
-        List<TitleData> rs = Sql().readeventquery(sql, "title");
+        List<TitleData> rs = instance.getDatabase().readQuery(sql, null, "title");
 
         if(rs != null){
             for(TitleData t : rs){

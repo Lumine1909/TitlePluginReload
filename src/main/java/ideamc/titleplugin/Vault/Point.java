@@ -7,12 +7,14 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+import static ideamc.titleplugin.TitlePlugin.instance;
+
 public class Point {
     public static boolean removeplayerpoint(String playername,int playerpoint){
         Player player = Bukkit.getPlayer(playername);
         UUID playeruuid = player.getUniqueId();
 
-        PlayerPointsAPI ppapi = TitlePlugin.getPlayerPointsAPI();
+        PlayerPointsAPI ppapi = instance.getPlayerpointsAPI();
         boolean r = ppapi.take(playeruuid,playerpoint);
 
         if(r){

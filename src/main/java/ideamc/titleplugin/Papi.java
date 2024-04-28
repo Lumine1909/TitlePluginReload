@@ -10,7 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
+
 
 public class Papi extends PlaceholderExpansion {
 
@@ -50,14 +51,14 @@ public class Papi extends PlaceholderExpansion {
         String stplayer_uuid = player_uuid.toString();
         if (params.equalsIgnoreCase("player_prefix")) {
             String sql = "SELECT * FROM PlayerTitle WHERE prefix_enable = true AND player_uuid = '" + stplayer_uuid + "'";
-            List<biyao.TitleData> rs = Sql().readeventquery(sql, "playertitle");
-            if (rs != null){
-                for(biyao.TitleData t : rs){
+            List<biyao.TitleData> rs = instance.getDatabase().readQuery(sql, null, "playertitle");
+            if (rs != null) {
+                for (biyao.TitleData t : rs) {
                     int title_id = t.getTitleId();
                     String sql1 = "SELECT * FROM Title WHERE title_id = " + title_id;
-                    List<biyao.TitleData> rs1 = Sql().readeventquery(sql1, "title");
-                    if (rs1 != null){
-                        for(biyao.TitleData t1 : rs1){
+                    List<biyao.TitleData> rs1 = instance.getDatabase().readQuery(sql1, null, "title");
+                    if (rs1 != null) {
+                        for (biyao.TitleData t1 : rs1) {
                             return t1.getTitleName();
                         }
                     }
@@ -65,14 +66,14 @@ public class Papi extends PlaceholderExpansion {
             }
         } else if (params.equalsIgnoreCase("player_suffix")) {
             String sql = "SELECT * FROM PlayerTitle WHERE suffix_enable = true AND player_uuid = '" + stplayer_uuid + "'";
-            List<biyao.TitleData> rs = Sql().readeventquery(sql, "playertitle");
-            if (rs != null){
-                for(biyao.TitleData t : rs){
+            List<biyao.TitleData> rs = instance.getDatabase().readQuery(sql, null, "playertitle");
+            if (rs != null) {
+                for (biyao.TitleData t : rs) {
                     int title_id = t.getTitleId();
                     String sql1 = "SELECT * FROM Title WHERE title_id = " + title_id;
-                    List<biyao.TitleData> rs1 = Sql().readeventquery(sql1, "title");
-                    if (rs1 != null){
-                        for(biyao.TitleData t1 : rs1){
+                    List<biyao.TitleData> rs1 = instance.getDatabase().readQuery(sql1, null, "title");
+                    if (rs1 != null) {
+                        for (biyao.TitleData t1 : rs1) {
                             return t1.getTitleName();
                         }
                     }

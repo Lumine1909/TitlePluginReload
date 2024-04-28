@@ -8,14 +8,14 @@ import java.util.List;
 
 import static ideamc.titleplugin.Date.addDaysToDate;
 import static ideamc.titleplugin.Date.getCurrentDate;
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
 import static ideamc.titleplugin.Vault.Point.removeplayerpoint;
 import static ideamc.titleplugin.Vault.coin.removecoin;
 
 public class BuyTitle {
     public static void buycoin(CommandSender sender, int title_id){
         String sql = "SELECT * FROM Title WHERE title_id = " + title_id;
-        List<biyao.TitleData> resultSet = Sql().readquery(sql, sender, "title");
+        List<biyao.TitleData> resultSet = instance.getDatabase().readQuery(sql, sender, "title");
         if (resultSet != null) {
             String player_name = sender.getName();
             String stplayer_uuid = Bukkit.getPlayer(player_name).getUniqueId().toString();
@@ -42,7 +42,7 @@ public class BuyTitle {
                             sql1 += " false, ";
                             sql1 += " false)";
                         }
-                        if(Sql().query(sql1,sender)){
+                        if(instance.getDatabase().query(sql1,sender)){
                             sender.sendMessage("[TitlePlugin]§2称号ID" + title_id + "成功!");
                         }else{
                             sender.sendMessage("[TitlePlugin]§4称号ID" + title_id + "失败!");
@@ -57,7 +57,7 @@ public class BuyTitle {
 
     public static void buypoint(CommandSender sender, int title_id){
         String sql = "SELECT * FROM Title WHERE title_id = " + title_id;
-        List<biyao.TitleData> resultSet = Sql().readquery(sql, sender, "Title");
+        List<biyao.TitleData> resultSet = instance.getDatabase().readQuery(sql, sender, "Title");
         if (resultSet != null) {
             String player_name = sender.getName();
             String stplayer_uuid = Bukkit.getPlayer(player_name).getUniqueId().toString();
@@ -84,7 +84,7 @@ public class BuyTitle {
                             sql1 += " false,";
                             sql1 += " false)";
                         }
-                        if(Sql().query(sql1,sender)){
+                        if(instance.getDatabase().query(sql1,sender)){
                             sender.sendMessage("[TitlePlugin]§2购买成功!");
                         }else{
                             sender.sendMessage("[TitlePlugin]§4购买失败!");

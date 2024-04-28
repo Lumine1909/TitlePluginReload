@@ -1,6 +1,7 @@
 package ideamc.titleplugin.Title;
 
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
+
 import ideamc.titleplugin.Date;
 
 import org.bukkit.Bukkit;
@@ -14,7 +15,7 @@ public class AddTitle {
         sql += title_id + "', ";
         sql += "false, ";
         sql += "false)";
-        if(Sql().query(sql, sender)){
+        if(instance.getDatabase().query(sql, sender)){
             sender.sendMessage("[TitlePlugin]§2已向玩家" + playername + "添加称号ID" + title_id);
         }else{
             sender.sendMessage("[TitlePlugin]§4向玩家" + playername + "添加称号ID" + title_id + "失败");
@@ -30,7 +31,7 @@ public class AddTitle {
         sql += expiration_date + "', ";
         sql += "false, ";
         sql += "false)";
-        if(Sql().query(sql, sender)){
+        if(instance.getDatabase().query(sql, sender)){
             sender.sendMessage("[TitlePlugin]§2已向玩家" + playername + "添加称号ID" + title_id);
         }else{
             sender.sendMessage("[TitlePlugin]§4向玩家" + playername + "添加称号ID" + title_id + "失败");
@@ -43,7 +44,7 @@ public class AddTitle {
         sql += title_id + ", ";
         sql += "false, ";
         sql += "false)";
-        return Sql().eventquery(sql);
+        return instance.getDatabase().eventQuery(sql);
     }
 
 }

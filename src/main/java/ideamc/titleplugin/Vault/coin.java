@@ -6,11 +6,13 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import static ideamc.titleplugin.TitlePlugin.instance;
+
 public class coin {
     public static boolean removecoin(String playername, int coin) {
         Player player = Bukkit.getPlayer(playername);
 
-        Economy economy = TitlePlugin.getEconomy();
+        Economy economy = instance.getEconomy();
         EconomyResponse r = economy.withdrawPlayer(playername, coin);
 
         if(r.transactionSuccess()) {

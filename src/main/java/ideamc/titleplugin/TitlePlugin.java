@@ -8,9 +8,7 @@ import ideamc.titleplugin.Event.playerJoinEvent;
 import ideamc.titleplugin.GUI.GeRenGui;
 import ideamc.titleplugin.GUI.ListGui;
 import ideamc.titleplugin.GUI.ShopGui;
-import ideamc.titleplugin.SQL.Sql;
-import ideamc.titleplugin.SQL.MySQL;
-import ideamc.titleplugin.SQL.sqlchoose;
+import ideamc.titleplugin.SQL.DataBase;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,67 +21,54 @@ import org.black_ixx.playerpoints.PlayerPoints;
 import static ideamc.titleplugin.Event.TitleSaleEndDateEvent.titlesaleendate;
 
 public class TitlePlugin extends JavaPlugin {
-    private static FileConfiguration config;
-    private static Economy econ = null;
-    private static PlayerPointsAPI playerpointsAPI;
-
+    public static TitlePlugin instance;
+    Economy econ;
+    PlayerPointsAPI playerpointsAPI;
+    DataBase db;
     @Override
     public void onEnable() {
+        instance = this;
         saveDefaultConfig();
-        config = getConfig();
-
+        FileConfiguration config = getConfig();
         new Metrics(this, 21615);
-
         //检查更新
-        if(config.getBoolean("checkupdata")){
+        if (config.getBoolean("checkupdate")) {
             CheckUpdata.CheckUpdates(getDescription().getVersion());
         }
-
-        if(config.getString("SQL.type").equalsIgnoreCase("mysql")){
-            MySQL.MysqlConfig();
-            MySQL.LoadMysql();
-        }else{
-            Sql.LoadSQLite();
-        }
-
+        db = new DataBase(config.getString("SQL.type").equalsIgnoreCase("mysql"));
         new AdminCommand(this);
         new PlayerCommand(this);
         new TabCommand(this);
-
         //挂钩vault
-        if (!setupEconomy() ) {
+        if (!setupEconomy()) {
             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§4前置Vault未找到,金币购买功能无法使用!");
-        }else{
+        } else {
             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§2前置Vault已找到!");
         }
-        //挂钩playerpoints
+        //挂钩playerPoints
         if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
             playerpointsAPI = PlayerPoints.getInstance().getAPI();
             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§2前置PlayerPoints已找到!");
-        }else{
+        } else {
             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§4前置PlayerPoints未找到,点券购买功能无法使用!");
         }
         //挂钩papi
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new Papi(this).register();
             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§2前置PlaceholderAPI已找到!");
-        }else{
+        } else {
             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§4前置PlaceholderAPI未找到,变量功能无法使用!");
         }
-
         new ListGui(this);
         new ShopGui(this);
         new GeRenGui(this);
         new playerJoinEvent(this);
         new TitleSaleEndDateEvent();
         titlesaleendate();
-
     }
-
     @Override
     public void onDisable() {
     }
-
     //检测vault是否存在并注册
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -96,24 +81,13 @@ public class TitlePlugin extends JavaPlugin {
         econ = rsp.getProvider();
         return econ != null;
     }
-
-    public static Economy getEconomy() {
+    public DataBase getDatabase() {
+        return db;
+    }
+    public Economy getEconomy() {
         return econ;
     }
-
-    public static PlayerPointsAPI getPlayerPointsAPI() {
+    public PlayerPointsAPI getPlayerpointsAPI() {
         return playerpointsAPI;
-    }
-
-    public static FileConfiguration getconfig() {
-        return config;
-    }
-
-    public static sqlchoose Sql(){
-        if(config.getString("SQL.type").equalsIgnoreCase("mysql")){
-            return new MySQL();
-        }else{
-            return new Sql();
-        }
     }
 }

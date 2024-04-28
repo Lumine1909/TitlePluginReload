@@ -14,7 +14,7 @@ import java.util.*;
 import static ideamc.titleplugin.Date.isDateLater;
 import static ideamc.titleplugin.Title.AddTitle.eventaddtitle;
 import static ideamc.titleplugin.Title.DelTitle.eventdelplayertitle;
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
 import static org.bukkit.Bukkit.getServer;
 
 public class playerJoinEvent implements Listener {
@@ -30,7 +30,7 @@ public class playerJoinEvent implements Listener {
         String stplayer_uuid = player_uuid.toString();
 
         String sql = "SELECT DISTINCT * FROM Title";
-        List<biyao.TitleData> rs = Sql().readeventquery(sql, "title");
+        List<biyao.TitleData> rs = instance.getDatabase().readQuery(sql, null, "title");
         Set<String> uniquePermissions = new HashSet<>();
         if(rs != null){
             for(biyao.TitleData t : rs){
@@ -41,7 +41,7 @@ public class playerJoinEvent implements Listener {
             }
             if(!uniquePermissions.isEmpty()){
                 String sql1 = "SELECT * FROM PlayerTitle WHERE player_uuid = " + "'" + stplayer_uuid + "'";
-                List<biyao.TitleData> rs1 = Sql().readeventquery(sql1, "playertitle");
+                List<biyao.TitleData> rs1 = instance.getDatabase().readQuery(sql1, null, "playertitle");
                 ArrayList<Integer> title_id = new ArrayList<>();//玩家所拥有的称号ID集合
                 if(rs1 != null){
                     for(biyao.TitleData t1 : rs1){
@@ -53,7 +53,7 @@ public class playerJoinEvent implements Listener {
                         Permission per = new Permission(permission);
                         if(player.hasPermission(per)){
                             String sql2 = "SELECT * FROM Title WHERE permission = " + "'" + permission + "'";
-                            List<biyao.TitleData> rs2 = Sql().readeventquery(sql2, "title");
+                            List<biyao.TitleData> rs2 = instance.getDatabase().readQuery(sql2, null, "title");
                             if(rs2 != null){
                                 for(biyao.TitleData t2 : rs2){
                                     int t = t2.getTitleId();
@@ -69,7 +69,7 @@ public class playerJoinEvent implements Listener {
                             }
                         }else{
                             String sql2 = "SELECT * FROM Title WHERE permission = " + "'" + permission + "'";
-                            List<biyao.TitleData> rs2 = Sql().readeventquery(sql2, "title");
+                            List<biyao.TitleData> rs2 = instance.getDatabase().readQuery(sql2, null, "title");
                             if(rs2 != null){
                                 for(biyao.TitleData t2 : rs2){
                                     int t = t2.getTitleId();
@@ -95,7 +95,7 @@ public class playerJoinEvent implements Listener {
         String stplayer_uuid = player_uuid.toString();
 
         String sql = "SELECT DISTINCT * FROM PlayerTitle WHERE player_uuid = " + "'" + stplayer_uuid + "'";
-        List<biyao.TitleData> rs = Sql().readeventquery(sql, "playertitle");
+        List<biyao.TitleData> rs = instance.getDatabase().readQuery(sql, null, "playertitle");
         if(rs != null){
             for(biyao.TitleData t : rs){
                 String expiration_date = t.getExpirationDate();
@@ -103,7 +103,7 @@ public class playerJoinEvent implements Listener {
                 if(expiration_date != null){
                     if(isDateLater(expiration_date)){
                         String sql1 = "DELETE FROM PlayerTitle WHERE player_uuid = " + "'" + stplayer_uuid + "'" + " AND expiration_date = " + "'" + expiration_date + "'";
-                        if(Sql().eventquery(sql1)){
+                        if(instance.getDatabase().eventQuery(sql1)){
                             Bukkit.getConsoleSender().sendMessage("[TitlePlugin]§2玩家" + player.getName() + "称号ID" + title_id + "已过期");
                             player.sendMessage("§2[Titleplugin]称号ID" + title_id + "已过期");
                         }else{

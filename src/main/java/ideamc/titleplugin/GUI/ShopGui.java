@@ -18,7 +18,7 @@ import static ideamc.titleplugin.GUI.biyao.readshopdatabase;
 import static ideamc.titleplugin.GUI.biyao.createShopTitleItem;
 import static ideamc.titleplugin.Title.BuyTitle.buycoin;
 import static ideamc.titleplugin.Title.BuyTitle.buypoint;
-import static ideamc.titleplugin.TitlePlugin.Sql;
+import static ideamc.titleplugin.TitlePlugin.instance;
 
 public class ShopGui implements Listener {
     private static final int itemsPerPage = 45; // 每页45个物品
@@ -27,9 +27,10 @@ public class ShopGui implements Listener {
     private static Inventory gui;
     private static List<biyao.TitleData> titles;
 
-    public ShopGui(TitlePlugin plugin){
+    public ShopGui(TitlePlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
+
     public static void showShopGui(CommandSender sender) {
         titles = readshopdatabase((Player) sender);
         totalPages = (titles.size() + itemsPerPage - 1) / itemsPerPage;
@@ -38,12 +39,10 @@ public class ShopGui implements Listener {
         gui = Bukkit.createInventory(null, 54, "称号商店");
 
         refillInventory((Player) sender);
-
-
     }
     private static void refillInventory(Player player) {
         // 清空当前Inventory
-        if(gui !=null){
+        if (gui != null) {
             gui.clear();
         }
 
@@ -55,7 +54,7 @@ public class ShopGui implements Listener {
         }
 
         // 保持导航按钮状态不变
-        if(totalPages > 1){
+        if (totalPages > 1) {
             //前一页item
             ItemStack previousPageItem = new ItemStack(Material.BOOK);
             ItemMeta previousPagemeta = previousPageItem.getItemMeta();
@@ -67,12 +66,12 @@ public class ShopGui implements Listener {
             nextPagemeta.setDisplayName("后一页");
             nextPageItem.setItemMeta(nextPagemeta);
 
-            if (currentPage == 0){
+            if (currentPage == 0) {
                 gui.setItem(50, nextPageItem);
-            }else if(currentPage > 0){
+            } else if (currentPage > 0) {
                 gui.setItem(48, previousPageItem);
                 gui.setItem(50, nextPageItem);
-            }else if(currentPage == totalPages){
+            } else if (currentPage == totalPages) {
                 gui.setItem(48, previousPageItem);
             }
         }
@@ -88,21 +87,21 @@ public class ShopGui implements Listener {
         if (clickedInventory != null && clickedInventory.equals(gui)) {
             event.setCancelled(true); // 防止玩家直接拿取物品
 
-            if(event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NAME_TAG){
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NAME_TAG) {
                 String stitle_id = event.getCurrentItem().getItemMeta().getDisplayName();
                 int title_id = Integer.parseInt(stitle_id);
                 String sql = "SELECT * FROM Title WHERE title_id = '" + title_id + "'";
-                List<biyao.TitleData> rs = Sql().readquery(sql, player, "title");
-                if(rs != null){
-                    for(biyao.TitleData t : rs){
+                List<biyao.TitleData> rs = instance.getDatabase().readQuery(sql, player, "title");
+                if (rs != null) {
+                    for (biyao.TitleData t : rs) {
                         String type = t.getType();
-                        if(type.equals("coin")){
+                        if (type.equals("coin")) {
                             buycoin(player, title_id);
                             player.closeInventory();
-                        }else if(type.equals("points")){
+                        } else if (type.equals("points")) {
                             buypoint(player, title_id);
                             player.closeInventory();
-                        }else{
+                        } else {
                             player.sendMessage("[TitlePlugin]§4此称号不能购买");
                             player.closeInventory();
                         }
@@ -117,7 +116,7 @@ public class ShopGui implements Listener {
                     currentPage--;
                     refillInventory(player);
                 }
-            }else if (slot == 50) { // 后一页按钮被点击
+            } else if (slot == 50) { // 后一页按钮被点击
                 if (currentPage < totalPages - 1) {
                     currentPage++;
                     refillInventory(player);
